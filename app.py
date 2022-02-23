@@ -1,11 +1,7 @@
-from distutils.command.build_scripts import first_line_re
-from inspect import formatargspec
 import sys
-from traceback import format_exc
 from flask import Flask
 from flask import render_template
 from flask_sqlalchemy import SQLAlchemy
-import sys
 import os
 import click
 
@@ -76,16 +72,28 @@ def forge():
     click.echo('Done.')
 
 
+@app.context_processor
+def inject_user():
+    user = User.query.first()
+    return dict(user=user)
+
+
 @app.route("/")
 def index():
-    user = Uesr.query.first()
-    movies = Movife.query.all()
-    return render_template('index.html', user=user, movies=movies)
+    # user = User.query.first()
+    movies = Movie.query.all()
+    return render_template('index.html', movies=movies)
 
 
 @app.route("/hello")
 def hello():
     return "Welcome to WatchList"
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # user = User.query.first()
+    return render_template('404.html'), 404
 
 
 if __name__ == "__main__":
